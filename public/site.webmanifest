@@ -1,0 +1,17 @@
+{
+  "name": "Maison Noor — Parfums authentiques",
+  "short_name": "Maison Noor",
+  "description": "Parfums authentiques avec paiement à la livraison partout au Maroc.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f5ef",
+  "theme_color": "#12342e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

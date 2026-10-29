@@ -1,0 +1,21 @@
+# Dependencies, local caches and build output
+node_modules/
+.npm/
+dist/
+
+# Local environment values
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Generated per deployment from SITE_URL
+public/robots.txt
+public/sitemap.xml
+
+# Tooling and OS files
+.vite/
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
