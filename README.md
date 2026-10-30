@@ -84,3 +84,9 @@ Le tableur opérationnel est créé avec l’onglet **Commandes** et les colonne
 3. Relancez un déploiement Vercel.
 
 Le checkout ouvre aussi une confirmation WhatsApp préremplie vers le numéro configuré par `VITE_WHATSAPP_NUMBER`.
+
+## Version autonome hors ligne
+
+Une version sans dépendance, directement téléchargeable et utilisable hors ligne est incluse : [`public/maison-noor-offline.html`](public/maison-noor-offline.html).
+
+Elle inclut la collection, le panier local, le formulaire COD, la confirmation WhatsApp et une file d’attente locale en cas d’absence de réseau.
