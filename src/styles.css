@@ -356,3 +356,22 @@ h1, h2, h3, p { margin-top: 0; }
   .cart-drawer__item-actions { padding-top: 18px; }
   .cart-drawer__stepper { width: 62px; }
 }
+
+.success-modal__whatsapp {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: #f8f5ed;
+  background: #1f8f4d;
+  border: 1px solid #1f8f4d;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  transition: transform .2s ease, background .2s ease;
+}
+.success-modal__whatsapp:hover { color: #fff; background: #17733d; transform: translateY(-2px); }
+.success-modal__whatsapp + button { margin-top: 16px; }

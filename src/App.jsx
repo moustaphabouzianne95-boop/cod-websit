@@ -234,6 +234,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [lastOrder, setLastOrder] = useState(null);
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     name: '',
@@ -331,6 +332,64 @@ function App() {
     setCartItems((current) => current.filter((item) => !(item.productId === productId && item.formatId === formatId)));
   };
 
+  const createOrderPayload = () => ({
+    orderId: `MN-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 900 + 100)}`,
+    createdAt: new Date().toISOString(),
+    status: 'Nouvelle',
+    customer: {
+      name: form.name.trim(),
+      phone: form.phone.trim(),
+      city: form.city,
+      address: form.address.trim(),
+    },
+    items: checkoutEntries.map((item) => ({
+      name: item.product.name,
+      variant: item.format.label,
+      quantity: item.quantity,
+      unitPrice: item.format.price,
+      lineTotal: item.format.price * item.quantity,
+    })),
+    subtotal: checkoutSubtotal,
+    shipping,
+    total,
+    currency: 'MAD',
+    paymentMethod: 'Paiement à la livraison',
+    source: 'Maison Noor — site web',
+    whatsapp: 'Lien de confirmation proposé',
+  });
+
+  const sendOrderToSheet = (payload) => {
+    if (!site.ordersEndpoint) return;
+    // text/plain keeps this request simple for an Apps Script Web App endpoint.
+    fetch(site.ordersEndpoint, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    }).catch(() => {
+      // The customer has already received confirmation; the Apps Script log can be retried if needed.
+    });
+  };
+
+  const whatsappConfirmationUrl = lastOrder ? (() => {
+    const lines = [
+      'Bonjour Maison Noor,',
+      `Je confirme ma commande COD ${lastOrder.orderId}.`,
+      '',
+      `Client : ${lastOrder.customer.name}`,
+      `Téléphone : ${lastOrder.customer.phone}`,
+      `Ville : ${lastOrder.customer.city}`,
+      `Adresse : ${lastOrder.customer.address}`,
+      '',
+      'Articles :',
+      ...lastOrder.items.map((item) => `• ${item.name} ${item.variant} ×${item.quantity}`),
+      '',
+      `Total à régler : ${formatMoney(lastOrder.total)}`,
+      'Paiement : à la livraison.',
+    ];
+    return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(lines.join('\n'))}`;
+  })() : '';
+
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
@@ -351,11 +410,14 @@ function App() {
       return;
     }
 
+    const orderPayload = createOrderPayload();
     if (!cartItems.length) {
       setCartItems([{ productId: activeProduct.id, formatId: selectedFormat, quantity }]);
     }
+    setLastOrder(orderPayload);
+    sendOrderToSheet(orderPayload);
     setSubmitted(true);
-    showToast('Votre demande est bien enregistrée.');
+    showToast(site.ordersEndpoint ? 'Commande transmise. Confirmez-la sur WhatsApp.' : 'Commande prête. Confirmez-la sur WhatsApp.');
   };
 
   return (
@@ -658,7 +720,8 @@ function App() {
                 <div className="success-modal__icon"><Icon name="check" size={28} /></div>
                 <p className="section-kicker">DEMANDE ENREGISTRÉE</p>
                 <h3>Merci, {form.name.split(' ')[0]}.</h3>
-                <p>Notre équipe vous appellera au <strong>{form.phone}</strong> pour confirmer la livraison de <strong>{checkoutEntries.length === 1 ? `${checkoutEntries[0].product.name} ${checkoutEntries[0].format.label}` : `${checkoutEntries.length} parfums Maison Noor`}</strong>.</p>
+                <p>{site.ordersEndpoint ? <>Votre commande est aussi enregistrée dans notre système. Confirmez-la sur WhatsApp pour recevoir rapidement notre appel au <strong>{form.phone}</strong>.</> : <>Confirmez votre demande sur WhatsApp : notre équipe vous appellera au <strong>{form.phone}</strong> pour organiser votre livraison.</>}</p>
+                {whatsappConfirmationUrl && <a className="success-modal__whatsapp" href={whatsappConfirmationUrl} target="_blank" rel="noreferrer"><Icon name="phone" size={18} /> Confirmer sur WhatsApp</a>}
                 <button type="button" onClick={() => setSubmitted(false)}>Modifier ma demande</button>
               </div>
             )}

@@ -74,3 +74,13 @@ VITE_CONTACT_PHONE_DISPLAY=+212 6 00 00 00 00
 | `npm run generate:seo` | Génère `robots.txt` et `sitemap.xml`. |
 | `npm run build` | Génère la version de production dans `dist/`. |
 | `npm run preview` | Prévisualise le build de production. |
+
+## Réception COD : Google Sheets + WhatsApp
+
+Le tableur opérationnel est créé avec l’onglet **Commandes** et les colonnes de suivi COD. Le code de réception Google Apps Script se trouve dans [`google-apps-script/Code.gs`](google-apps-script/Code.gs).
+
+1. Publiez ce script comme **Application Web** depuis le tableur, suivant les instructions dans [`google-apps-script/README.md`](google-apps-script/README.md).
+2. Ajoutez l’URL `/exec` obtenue à la variable Vercel `VITE_ORDERS_ENDPOINT`.
+3. Relancez un déploiement Vercel.
+
+Le checkout ouvre aussi une confirmation WhatsApp préremplie vers le numéro configuré par `VITE_WHATSAPP_NUMBER`.
